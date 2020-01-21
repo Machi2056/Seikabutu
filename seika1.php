@@ -1,78 +1,239 @@
 <?php
+// 数字、または「.」が押されたら
+if (isset($_POST['num'])) {
+  if ($_POST['num1'] != '' && $_POST['pre_ope'] != '' && $_POST['num2'] == '') {
+    $_POST['in'] = 0;
+    num_set();
+  } elseif ($_POST['equal'] === '=') {
+    $num = $_POST['num'];
+  } else {
+    num_set();
+  }
+} else {
+  $num = 0;
+}
 
-session_start();
-unset($_SESSION['name']);
-unset($_SESSION['old']);
-unset($_SESSION['color']);
+// 四則演算子が押されたら
+if (isset($_POST['ope'])) {
+  if ($_POST['num1'] !== '' && $_POST['pre_ope'] !== '' && $_POST['num2'] !== '' && $_POST['equal'] === '') {
+    $ope = $_POST['ope'];
+    switch ($_POST['pre_ope']) {
+      case '+':
+        $num = $_POST['num1'] + $_POST['num2'];
+        $num1 = $_POST['num1'] + $_POST['num2'];
+        break;
+      case '-':
+        $num = $_POST['num1'] - $_POST['num2'];
+        $num1 = $_POST['num1'] - $_POST['num2'];
+        break;
+      case 'x':
+        $num = $_POST['num1'] * $_POST['num2'];
+        $num1 = $_POST['num1'] * $_POST['num2'];
+        break;
+      case '÷':
+        $num = $_POST['num1'] / $_POST['num2'];
+        $num1 = $_POST['num1'] / $_POST['num2'];
+        break;
+    }
+  } else {
+    $num = $_POST['in'];
+    $num1 = $_POST['in'];
+    $ope = $_POST['ope'];
+  }
+}
 
-require_once('class.php');
+// =が押されたら
+if (isset($_POST['='])) {
+  if ($_POST['num1'] !== '' && $_POST['pre_ope'] !== '' && $_POST['num2'] !== '') {
+    $ope = $_POST['pre_ope'];
+    $num2 = $_POST['num2'];
+    $equal = $_POST['='];
+    switch ($_POST['pre_ope']) {
+      case '+':
+        $num = $_POST['num1'] + $_POST['num2'];
+        $num1 = $_POST['num1'] + $_POST['num2'];
+        break;
+      case '-':
+        $num = $_POST['num1'] - $_POST['num2'];
+        $num1 = $_POST['num1'] - $_POST['num2'];
+        break;
+      case 'x':
+        $num = $_POST['num1'] * $_POST['num2'];
+        $num1 = $_POST['num1'] * $_POST['num2'];
+        break;
+      case '÷':
+        $num = $_POST['num1'] / $_POST['num2'];
+        $num1 = $_POST['num1'] / $_POST['num2'];
+        break;
+    }
+  } elseif ($_POST['num1'] !== '' && $_POST['pre_ope'] !== '' && $_POST['num2'] === '') {
+    $num2 = $_POST['num1'];
+    $ope = $_POST['pre_ope'];
+    $equal = $_POST['='];
+    switch ($_POST['pre_ope']) {
+      case '+':
+        $num = $_POST['num1'] + $_POST['num1'];
+        $num1 = $_POST['num1'] + $_POST['num1'];
+        break;
+      case '-':
+        $num = $_POST['num1'] - $_POST['num1'];
+        $num1 = $_POST['num1'] - $_POST['num1'];
+        break;
+      case 'x':
+        $num = $_POST['num1'] * $_POST['num1'];
+        $num1 = $_POST['num1'] * $_POST['num1'];
+        break;
+      case '÷':
+        $num = $_POST['num1'] / $_POST['num1'];
+        $num1 = $_POST['num1'] / $_POST['num1'];
+        break;
+    }
+  } else {
+    $num = $_POST['in'];
+  }
+}
 
-$post = new Post;
-$post->nameCheck();
-$post->oldCheck();
-$post->colorCheck();
-$post->kanryouCheck();
+// C  +/-  % が押されたら
+if (isset($_POST['button'])) {
+  switch ($_POST['button']) {
+    case 'C':
+      $num = 0;
+      $_POST['in'] = '';
+      $_POST['num1'] = '';
+      $_POST['pre_ope'] = '';
+      $_POST['num2'] = '';
+      $_POST['equal'] = '';
+      break;
+    case '+/-':
+      if (($_POST['num1'] !== '' && $_POST['pre_ope'] !== '') || ($_POST['num1'] === '' && $_POST['pre_ope'] === '')) {
+        if ($_POST['in'] === '-0') {
+          $num = '0';
+          $num2 = '0';
+          $num1 = $_POST['num1'];
+          $ope = $_POST['pre_ope'];
+        } else {
+          $num = '-0';
+          $num2 = '-0';
+          $num1 = $_POST['num1'];
+          $ope = $_POST['pre_ope'];
+        }
+      } else {
+        $num = -$_POST['in'];
+        $num2 = -$_POST['in'];
+        $num1 = $_POST['num1'];
+        $ope = $_POST['pre_ope'];
+      }
+      break;
+    case '%':
+      if ($_POST['num1'] === '' || $_POST['equal'] === '=') {
+        $num = $_POST['in'] / 100;
+      } elseif ($_POST['num2'] === '') {
+        $num = $_POST['in'];
+        $num1 = $_POST['num1'];
+        $ope = $_POST['pre_ope'];
+      } else {
+        $num = $_POST['in'];
+        $num2 = $_POST['in'];
+        $num1 = $_POST['num1'];
+        $ope = $_POST['pre_ope'];
+      }
+      break;
+  }
+}
+
+function num_set() {
+  global $num, $num1, $num2, $ope;
+  // . が押されたら
+  if (preg_match('/\./', $_POST['num'])) {
+    if (preg_match('/\./', $_POST['in'])) {
+      $num = $_POST['in'];
+      $num2 = $_POST['in'];
+      $num1 = $_POST['num1'];
+      $ope = $_POST['pre_ope'];
+    } elseif ($_POST['in'] == 0) {
+      $num = '0.';
+      $num2 = '0.';
+      $num1 = $_POST['num1'];
+      $ope = $_POST['pre_ope'];
+    } else {
+      $num = $_POST['in'];
+      $num2 = $_POST['in'];
+      $num .= $_POST['num'];
+      $num2 .= $_POST['num'];
+      $num1 = $_POST['num1'];
+      $ope = $_POST['pre_ope'];
+    }
+  } else {
+    if (preg_match('/(0\.)|[1-9]/', $_POST['in'])) {
+      $num = $_POST['in'];
+      $num2 = $_POST['in'];
+      $num .= $_POST['num'];
+      $num2 .= $_POST['num'];
+      $num1 = $_POST['num1'];
+      $ope = $_POST['pre_ope'];
+    } elseif ($_POST['in'] === '-0') {
+      $num = '-';
+      $num2 = '-';
+      $num .= $_POST['num'];
+      $num2 .= $_POST['num'];
+      $num1 = $_POST['num1'];
+      $ope = $_POST['pre_ope'];
+    } else {
+      $num = '';
+      $num = $_POST['num'];
+      $num2 = $_POST['num'];
+      $num1 = $_POST['num1'];
+      $ope = $_POST['pre_ope'];
+    }
+  }
+}
 
 ?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <title>電卓</title>
   <meta charset="utf-8">
-  <title>お問い合わせ画面</title>
-  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>お問い合わせ画面</h1>
-  <p>お問い合わせ内容を入力してください</p>
-
-  <script>
-  function kakunin() {
-    var select = confirm("問い合わせますか？\n「OK」で送信\n「キャンセル」で送信中止");
-     return select;
-  }
-  </script>
-
-  <form action="" method="post" onsubmit="return kakunin()">
-    <p>
-      (必須) 名前 <input type="text" name="name" value="<?php if ($post->name !== '') { echo $post->name; } ?>">
-      <?php
-        if ($_POST['name'] === '' && !empty($post->err)) {
-          echo '<label class="err">' . $post->err . '</label>';
-        }
-      ?>
-    </p>
-    <p>
-      (必須) 年齢 <input type="text" name="old"  value="<?php if ($post->old >= 0) { echo $post->old; } ?>">  歳
-      <?php
-        if (!empty($post->oldErr)) {
-          echo '<label class="err">' . $post->oldErr . '</label>';
-        } elseif ($_POST['old'] === '' && !empty($post->err)) {
-          echo '<label class="err">' . $post->err . '</label>';
-        }
-      ?>
-    </p>
-    <p>好きな色を選んでください(未選択 or 複数選択 <span>可</span>)</p>
-            <p class="likeColors">
-              <label class="colors"><input type="checkbox" name="colors[]" value="赤"
-                <?php
-                  if (in_array('赤', $_POST['colors'])) {
-                    echo "checked";
-                  }
-                ?>>赤</label>
-              <label class="colors"><input type="checkbox" name="colors[]" value="緑"
-                <?php
-                  if (in_array('緑', $_POST['colors'])) {
-                    echo "checked";
-                  }
-                ?>>緑</label>
-              <label><input type="checkbox" name="colors[]" value="青"
-                <?php
-                  if (in_array('青', $_POST['colors'])) {
-                    echo "checked";
-                  }
-                ?>>青</label>
-              </p>
-    <p><input type="submit" value="送信"></p>
+  <?php echo $num; ?>
+  <form action="" method="post">
+    <input type="hidden" name="in" value="<?php echo $num; ?>" placeholder="in" readonly="readonly">
+    <input type="hidden" name="num1" value="<?php echo $num1; ?>" placeholder="num1" readonly="readonly">
+    <input type="hidden" name="pre_ope" value="<?php echo $ope; ?>" placeholder="pre_ope" readonly="readonly">
+    <input type="hidden" name="num2" value="<?php echo $num2; ?>" placeholder="num2" readonly="readonly">
+    <input type="hidden" name="equal" value="<?php echo $equal; ?>" placeholder="=" readonly="readonly">
+    <table>
+      <tr>
+        <td><input type="submit" name="button" value="C"></td>
+        <td><input type="submit" name="button" value="+/-"></td>
+        <td><input type="submit" name="button" value="%"></td>
+        <td><input type="submit" name="ope" value="÷"></td>
+      </tr>
+      <tr>
+        <td><input type="submit" name="num" value="7"></td>
+        <td><input type="submit" name="num" value="8"></td>
+        <td><input type="submit" name="num" value="9"></td>
+        <td><input type="submit" name="ope" value="x"></td>
+      </tr>
+      <tr>
+        <td><input type="submit" name="num" value="4"></td>
+        <td><input type="submit" name="num" value="5"></td>
+        <td><input type="submit" name="num" value="6"></td>
+        <td><input type="submit" name="ope" value="-"></td>
+      </tr>
+      <tr>
+        <td><input type="submit" name="num" value="1"></td>
+        <td><input type="submit" name="num" value="2"></td>
+        <td><input type="submit" name="num" value="3"></td>
+        <td><input type="submit" name="ope" value="+"></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="submit" name="num" value="0"></td>
+        <td><input type="submit" name="num" value="."></td>
+        <td><input type="submit" name="=" value="="></td>
+      </tr>
+    </table>
   </form>
-  </body>
+</body>
 </html>
