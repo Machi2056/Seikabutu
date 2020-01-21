@@ -1,0 +1,23 @@
+h1 {
+  /* color: red; */
+  font-weight: bold;
+}
+
+.err {
+  color: red;
+  font-weight: bold;
+}
+
+label {
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+span {
+  font-weight: bold;
+  color: #32CD32;
+}
+
+td {
+  text-align: center;
+}
