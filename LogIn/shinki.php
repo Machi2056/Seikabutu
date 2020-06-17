@@ -12,7 +12,10 @@ $pass = "";
 if (isset($_POST['sub'])) { // サブミットボタンが押されたら
   $name = $_POST['name'];
   $pass = $_POST['password'];
-  if (user_check($name) === true && password_check($pass) === true) { // ユーザー名とパスワードが正しく入力されていたら
+  $pass2 = $_POST['password2'];
+  if (user_check($name) === true &&
+                            password_check($pass) === true &&
+                            trim($pass) === trim($pass2)) { // ユーザー名とパスワードが正しく入力されていたら
     try {// データベースに接続
       $db = new PDO(DSN, DB_USERNAME, DB_PASSWORD);
       $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -41,7 +44,7 @@ if (isset($_POST['sub'])) { // サブミットボタンが押されたら
       exit;
     }
   } else {// ユーザー名またはパスワードに不備があったらエラーを表示
-    if (strlen(trim($_POST['name'])) == 0) { // ユーザー名が空の時
+    if (strlen(trim($name)) == 0) { // ユーザー名が空の時
       $name_error_msg = "ユーザー名を入力してください。";
     } elseif (strlen(trim($name)) > 100) { // ユーザー名が長すぎる時
       $name_error_msg = "ユーザー名が長すぎます。";
@@ -53,12 +56,14 @@ if (isset($_POST['sub'])) { // サブミットボタンが押されたら
       $form_data = $name;
     }
 
-    if (strlen(trim($_POST['password'])) == 0) { // パスワードが空の時
+    if (strlen(trim($pass)) == 0) { // パスワードが空の時
       $password_error_msg = "パスワードを入力してください。";
-    } elseif (strlen(trim($_POST['password'])) < 8) {// パスワードが8文字以下の時
-     $password_error_msg = "パスワードが短すぎます。";
-   } else {// パスワードが半角英数字でない時
+    } elseif (strlen(trim($pass)) < 8) {// パスワードが8文字以下の時
+      $password_error_msg = "パスワードが短すぎます。";
+    } elseif (!preg_match('/\A[0-9A-Za-z]+\z/', $pass)) {// パスワードが半角英数字でない時
       $password_error_msg = "半角英数字で入力してください。";
+    } elseif (trim($pass) !== trim($pass2)) {
+      $password_error_msg = "パスワード入力に誤りがあります。";
     }
   }
 }
@@ -81,6 +86,8 @@ if (isset($_POST['sub'])) { // サブミットボタンが押されたら
     <br>
     <input type="password" name="password" placeholder="パスワードを入力">
     <p style="color:red;"><?php echo h($password_error_msg); ?></p>
+    <br>
+    <input type="password" name="password2" placeholder="パスワードを再度入力">
     <br>
     <input type="submit" name="sub" value="登録する">
   </form>

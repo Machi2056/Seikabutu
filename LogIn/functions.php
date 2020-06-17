@@ -11,8 +11,8 @@ function user_check($name) {
 }
 
 function password_check($pass) {
-  if((strlen(trim($pass)) > 0  && strlen(trim($pass)) >= 8)
-    && preg_match('/\A[0-9A-Za-z]+\z/', $pass)) { // 短すぎない半角英数字のパスワードが入力されていたら
+  if ((strlen(trim($pass)) > 0  && strlen(trim($pass)) >= 8)
+    && preg_match('/\A[0-9A-Za-z]+\z/', $pass)) { // 短すぎないパスワードが入力されていたら
     return true;
   }
 }

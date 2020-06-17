@@ -9,6 +9,6 @@ echo "ログアウトしました。";
 </head>
 <body>
   <br>
-  <a href="login.php">もう一度ログインする</a>
+  <a href="login.php">ログインする</a>
 </body>
 </html>

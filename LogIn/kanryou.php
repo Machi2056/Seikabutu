@@ -1,6 +1,3 @@
-<?php
-// echo "登録が完了致しました。";
-?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
